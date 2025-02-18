@@ -1,13 +1,15 @@
-import { ModeToggle } from "@/components/mode-toggle";
-import { Button } from "@/components/ui/button";
+/*
+ * @Author: goudanyang
+ * @Date: 2025-02-14 14:30:01
+ * @LastEditors: goudanyang
+ * @LastEditTime: 2025-02-14 15:20:25
+ * @Description:
+ */
 
 function Home() {
   return (
     <div>
-      Home
-      <Button>hello</Button>
-      <div></div>
-      <ModeToggle />
+      <div className="bg-background text-foreground bg-warning">Home</div>
     </div>
   );
 }

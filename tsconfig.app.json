@@ -24,7 +24,8 @@
     /* Import maps */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "#/*": ["types/*"]
     }
   },
   "include": ["src"]

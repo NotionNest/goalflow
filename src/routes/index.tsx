@@ -1,44 +1,61 @@
-import React, { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import {
-  createBrowserRouter,
+  createHashRouter,
+  Navigate,
+  Outlet,
   RouterProvider,
   type RouteObject,
 } from "react-router-dom";
 import Layout from "@/Layouts";
+import { AppRouteObject } from "#/router";
+import { ERROR_ROUTE } from "./routes/error-routers";
+import { usePermissionRoutes } from "./hooks/use-permission-routes";
 
-const Home = lazy(() => import("@/pages/Home"));
-const NotFound = lazy(() => import("@/pages/NotFound"));
-const About = lazy(() => import("@/pages/About"));
+const PUBLIC_ROUTE: AppRouteObject = {
+  path: "/login",
+  element: <div>Login</div>,
+};
 
-const LazyLoad = (Component: React.ElementType) => (
-  <Suspense fallback={<div>Loading...</div>}>
-    <Component />
-  </Suspense>
-);
+const NO_MATCHED_ROUTE: AppRouteObject = {
+  path: "*",
+  element: <Navigate to="/404" replace />,
+};
 
-function Routes() {
-  const routes: RouteObject[] = [
-    {
-      path: "/",
-      element: <Layout />,
-      children: [
-        {
-          index: true,
-          element: LazyLoad(Home),
-        },
-        {
-          path: "about",
-          element: <About />,
-        },
-      ],
-    },
-    {
-      path: "*",
-      element: LazyLoad(NotFound),
-    },
-  ];
-  const router = createBrowserRouter(routes);
+export default function Router() {
+  const permissionRoutes = usePermissionRoutes();
+  const PROTECTED_ROUTE: AppRouteObject = {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to={"/dashboard"} replace />,
+      },
+      {
+        path: "dashboard",
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Outlet />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: <Navigate to={"/dashboard/workbench"} replace />,
+          },
+          ...permissionRoutes,
+        ],
+      },
+    ],
+  };
+  const routes = [
+    PUBLIC_ROUTE,
+    PROTECTED_ROUTE,
+    ERROR_ROUTE,
+    NO_MATCHED_ROUTE,
+  ] as RouteObject[];
+
+  const router = createHashRouter(routes);
+
   return <RouterProvider router={router} />;
 }
-
-export default Routes;
