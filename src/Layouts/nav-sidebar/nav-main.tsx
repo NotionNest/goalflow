@@ -26,7 +26,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useMemo } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 const items = [
   {
@@ -74,6 +74,13 @@ const items = [
 ];
 
 export function NavMain() {
+  function usePathname() {
+    const { pathname } = useLocation();
+
+    return useMemo(() => pathname, [pathname]);
+  }
+  const pathname = usePathname();
+
   const permissionRoutes = usePermissionRoutes();
 
   const menuList = useMemo(() => {
@@ -93,22 +100,18 @@ export function NavMain() {
   return (
     <div className="flex items-center justify-between">
       <SidebarGroup>
-        <SidebarGroupLabel>Application</SidebarGroupLabel>
+        <SidebarGroupLabel>Application </SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             {menuList.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  {/* <a href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </a> */}
-                  <NavLink to={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
+              <SidebarMenuItem key={item?.title}>
+                <SidebarMenuButton asChild isActive={item?.url === pathname}>
+                  <NavLink to={item?.url || "#"}>
+                    {item && item.icon && <item.icon />}
+                    <span>{item?.title}</span>
                   </NavLink>
                 </SidebarMenuButton>
-                {item.children?.length ? (
+                {item?.children?.length ? (
                   <Collapsible>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuAction className="data-[state=open]:rotate-180">
